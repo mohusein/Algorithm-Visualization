@@ -1,0 +1,75 @@
+import React, { useState, useEffect } from 'react';
+import { useSpring, animated } from 'react-spring';
+
+const SortingVisualizer = () => {
+  const [array, setArray] = useState([]);
+  const [isSorting, setIsSorting] = useState(false);
+  
+  useEffect(() => {
+    generateArray();
+  }, []);
+
+  // Generate an array of random numbers
+  const generateArray = () => {
+    const newArray = [];
+    for (let i = 0; i < 50; i++) {
+      newArray.push(Math.floor(Math.random() * 500) + 50);
+    }
+    setArray(newArray);
+  };
+
+  // Sorting algorithm (Bubble Sort in this case)
+  const bubbleSort = async () => {
+    setIsSorting(true);
+    let arr = [...array];
+    for (let i = 0; i < arr.length; i++) {
+      for (let j = 0; j < arr.length - i - 1; j++) {
+        if (arr[j] > arr[j + 1]) {
+          // Swap
+          let temp = arr[j];
+          arr[j] = arr[j + 1];
+          arr[j + 1] = temp;
+
+          // Wait for the visual effect (simulation of sorting step-by-step)
+          setArray([...arr]);
+          await new Promise(resolve => setTimeout(resolve, 20));
+        }
+      }
+    }
+    setIsSorting(false);
+  };
+
+  return (
+    <div className="visualizer">
+      <h1>Sorting Algorithm Visualizer</h1>
+      <button onClick={generateArray} disabled={isSorting}>
+        Generate New Array
+      </button>
+      <button onClick={bubbleSort} disabled={isSorting}>
+        Start Bubble Sort
+      </button>
+
+      <div className="array-container">
+        {array.map((value, index) => (
+          <Bar key={index} value={value} />
+        ))}
+      </div>
+    </div>
+  );
+};
+
+// Bar Component for rendering each number as a bar
+const Bar = ({ value }) => {
+  const props = useSpring({
+    height: `${value}px`,
+    backgroundColor: 'royalblue',
+    margin: '2px',
+    width: '20px',
+    borderRadius: '5px',
+    opacity: 1,
+  });
+
+  return <animated.div style={props}></animated.div>;
+};
+
+export default SortingVisualizer;
